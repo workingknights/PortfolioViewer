@@ -48,13 +48,19 @@ class YahooQuoteSource @Inject() (implicit context: ExecutionContext, ws: WSClie
   }
 
 
-  case class Quote (name: String, symbol: String)
+  case class Quote (name: String, symbol: String, bid: Double, currency: String, yearLow: Double, yearHigh: Double, percentChange: String)
   case class Query (count: Int, quotes: Seq[Quote])
 
 
   implicit val quoteReads: Reads[Quote] = (
     (JsPath \ "Name").read[String] and
-      (JsPath \ "symbol").read[String])(Quote.apply _)
+      (JsPath \ "symbol").read[String] and
+      (JsPath \ "Bid").read[String].map(bid => bid.toDouble) and
+      (JsPath \ "Currency").read[String] and
+      (JsPath \ "YearLow").read[String].map(bid => bid.toDouble) and
+      (JsPath \ "YearHigh").read[String].map(bid => bid.toDouble) and
+      (JsPath \ "PercentChange").read[String]
+    )(Quote.apply _)
 
   implicit val queryReads: Reads[Query] = (
     (JsPath \ "query" \ "count").read[Int] and
@@ -63,12 +69,10 @@ class YahooQuoteSource @Inject() (implicit context: ExecutionContext, ws: WSClie
 
 
   def parseYahooQuote(json: JsValue) : String = {
-    System.err.println(s"json = $json")
-//    "GOOG"
     json.validate[Query] match {
       case c: JsSuccess[Query] => {
         val query: Query = c.get
-        Logger.info(s"Successfully parsed Quote: ${query.quotes(0).symbol}")
+        Logger.info("Successfully parsed Quotes")
         query.quotes.mkString(" ")
       }
       case e: JsError => {
