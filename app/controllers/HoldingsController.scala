@@ -5,6 +5,7 @@ import javax.inject._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import play.api.mvc._
+import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
 import services.Holding
 
 import scala.concurrent.ExecutionContext
@@ -12,7 +13,8 @@ import scala.concurrent.ExecutionContext
 
 
 @Singleton
-class HoldingsController @Inject()(implicit context: ExecutionContext) extends Controller {
+class HoldingsController @Inject()(implicit context: ExecutionContext, val reactiveMongoApi: ReactiveMongoApi)
+  extends Controller with MongoController with ReactiveMongoComponents {
 
   def saveHolding = Action(validateJson[Holding]) { request =>
     val holding = request.body
