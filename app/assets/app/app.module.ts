@@ -7,10 +7,11 @@ import { HttpModule }    from '@angular/http';
 
 import { AppRoutingModule } from './app-routing.module';
 
-import { AppComponent }         from './app.component';
-import { DashboardComponent }   from './dashboard.component';
+import { AppComponent }           from './app.component';
+import { DashboardComponent }     from './dashboard.component';
 import { HoldingsComponent }      from './holdings.component';
-import { HoldingService }          from './holding.service';
+import { HoldingDetailComponent } from './holding-detail.component';
+import { HoldingService }         from './holding.service';
 
 @NgModule({
   imports: [
@@ -23,6 +24,7 @@ import { HoldingService }          from './holding.service';
     AppComponent,
     DashboardComponent,
     HoldingsComponent,
+    HoldingDetailComponent,
   ],
   providers: [ HoldingService ],
   bootstrap: [ AppComponent ],

@@ -2,13 +2,13 @@ package controllers
 
 import javax.inject._
 
+import play.api.Logger
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json._
 import play.api.mvc._
 import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.bson.BSONDocument
-import reactivemongo.core.actors.Exceptions.PrimaryUnavailableException
 
 
 @Singleton
@@ -19,10 +19,14 @@ class HoldingsController @Inject()(val reactiveMongoApi: ReactiveMongoApi)
 
   def holdingRepo = new backend.PostMongoRepo(reactiveMongoApi)
 
-  def list: Action[AnyContent] = Action.async { implicit request =>
+  def list = Action.async {
+    Logger.info("list()")
     holdingRepo.find()
-      .map(holdings => Ok(Json.toJson(holdings.reverse)))
-      .recover {case PrimaryUnavailableException => InternalServerError("Please install MongoDB")}
+      .map(holdings => Ok(toDataField(holdings)))
+  }
+
+  private def toDataField[A](value: A)(implicit writes: Writes[A]): JsValue = {
+    JsObject(Seq("data" -> Json.toJson(value)))
   }
 
   private def RedirectAfterPost(result: WriteResult, call: Call): Result =
@@ -31,15 +35,15 @@ class HoldingsController @Inject()(val reactiveMongoApi: ReactiveMongoApi)
 
   def add: Action[JsValue] = Action.async(BodyParsers.parse.json) { implicit request =>
     val symbol = (request.body \ Symbol).as[String]
-    val shares = (request.body \ Shares).as[Int]
-    val price = (request.body \ Price).as[Double]
-    val tradeDate = (request.body \ TradeDate).as[String]
+//    val shares = (request.body \ Shares).as[Int]
+//    val price = (request.body \ Price).as[Double]
+//    val tradeDate = (request.body \ TradeDate).as[String]
 
     holdingRepo.save(BSONDocument(
-      Symbol -> symbol,
-      Shares -> shares,
-      Price -> price,
-      TradeDate -> tradeDate
+      Symbol -> symbol
+//      Shares -> shares,
+//      Price -> price,
+//      TradeDate -> tradeDate
     )).map(le => Redirect(routes.HoldingsController.list()))
   }
 

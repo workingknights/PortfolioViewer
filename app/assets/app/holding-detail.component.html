@@ -1,0 +1,16 @@
+<div *ngIf="holding">
+  <h2>{{holding.symbol}} details!</h2>
+  <div>
+    <label>id: </label>{{holding.id}}
+  </div>
+  <div>
+    <label>symbol: </label>
+    <input [(ngModel)]="holding.symbol" placeholder="symbol" />
+   </div>
+   <div>
+     <label>price: </label>
+     <input [(ngModel)]="holding.price" placeholder="price" />
+    </div>
+  <button (click)="goBack()">Back</button>
+  <button (click)="save()">Save</button>
+</div>

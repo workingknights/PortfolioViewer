@@ -1,5 +1,5 @@
 export class Holding {
-  public id: number;
+  public id: string;
   public symbol: string;
   public shares: number;
   public price: number;

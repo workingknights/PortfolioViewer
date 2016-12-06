@@ -23,7 +23,7 @@ class PostMongoRepo(reactiveMongoApi: ReactiveMongoApi) extends HoldingRepo {
   // BSON-JSON conversions
   import play.modules.reactivemongo.json._
 
-  protected def collection: JSONCollection =
+  protected def collection =
     reactiveMongoApi.db.collection[JSONCollection]("holdings")
 
   def find()(implicit ec: ExecutionContext): Future[List[JsObject]] =
