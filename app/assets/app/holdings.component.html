@@ -1,0 +1,22 @@
+<h2>My Holdings</h2>
+<div>
+  <label>Holding symbol:</label> <input #holdingSymbol />
+  <button (click)="add(holdingSymbol.value); holdingSymbol.value=''">
+    Add
+  </button>
+</div>
+<ul class="holdings">
+  <li *ngFor="let holding of holdings" (click)="onSelect(holding)"
+      [class.selected]="holding === selectedHolding">
+    <span class="badge">{{holding.id}}</span>
+    <span>{{holding.symbol}}</span>
+    <button class="delete"
+      (click)="delete(holding); $event.stopPropagation()">x</button>
+  </li>
+</ul>
+<div *ngIf="selectedHolding">
+  <h2>
+    {{selectedHolding.symbol | uppercase}} is my holding
+  </h2>
+  <button (click)="gotoDetail()">View Details</button>
+</div>
