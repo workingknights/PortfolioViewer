@@ -3,20 +3,47 @@ package controllers
 import javax.inject._
 
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 import play.api.mvc._
 import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
-import services.Holding
-
-import scala.concurrent.ExecutionContext
-
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import reactivemongo.api.commands.WriteResult
+import reactivemongo.bson.BSONDocument
+import reactivemongo.core.actors.Exceptions.PrimaryUnavailableException
 
 
 @Singleton
-class HoldingsController @Inject()(implicit context: ExecutionContext, val reactiveMongoApi: ReactiveMongoApi)
+class HoldingsController @Inject()(val reactiveMongoApi: ReactiveMongoApi)
   extends Controller with MongoController with ReactiveMongoComponents {
 
-  def saveHolding = Action(validateJson[Holding]) { request =>
+  import controllers.HoldingFields._
+
+  def holdingRepo = new backend.PostMongoRepo(reactiveMongoApi)
+
+  def list: Action[AnyContent] = Action.async { implicit request =>
+    holdingRepo.find()
+      .map(holdings => Ok(Json.toJson(holdings.reverse)))
+      .recover {case PrimaryUnavailableException => InternalServerError("Please install MongoDB")}
+  }
+
+  private def RedirectAfterPost(result: WriteResult, call: Call): Result =
+    if (!result.ok) InternalServerError(result.toString)
+    else Redirect(call)
+
+  def add: Action[JsValue] = Action.async(BodyParsers.parse.json) { implicit request =>
+    val symbol = (request.body \ Symbol).as[String]
+    val shares = (request.body \ Shares).as[Int]
+    val price = (request.body \ Price).as[Double]
+    val tradeDate = (request.body \ TradeDate).as[String]
+
+    holdingRepo.save(BSONDocument(
+      Symbol -> symbol,
+      Shares -> shares,
+      Price -> price,
+      TradeDate -> tradeDate
+    )).map(le => Redirect(routes.HoldingsController.list()))
+  }
+
+  /*def saveHolding = Action(validateJson[Holding]) { request =>
     val holding = request.body
     Holding.save(holding)
     Ok(Json.obj("status" -> "OK", "message" -> (s"Holding '${holding.symbol}' saved.")))
@@ -44,5 +71,14 @@ class HoldingsController @Inject()(implicit context: ExecutionContext, val react
       (__ \ "price").read[Double] and
       (__ \ "tradeDate").read[java.util.Date]
     )(Holding.apply _)
+*/
+}
 
+
+object HoldingFields {
+  val Id = "_id"
+  val Symbol = "symbol"
+  val Shares = "shares"
+  val Price = "price"
+  val TradeDate = "tradeDate"
 }
