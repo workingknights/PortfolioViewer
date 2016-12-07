@@ -33,13 +33,21 @@ export class HoldingService {
       .catch(this.handleError);
   }
 
-  public create(symbol: string): Promise<Holding> {
+  public create(holding: Holding): Promise<Holding> {
     return this.http
-      .post(this.holdingsUrl, JSON.stringify({symbol: symbol}), {headers: this.headers})
+      .post(this.holdingsUrl, JSON.stringify(holding), {headers: this.headers})
       .toPromise()
       .then(res => res.json().data)
       .catch(this.handleError);
   }
+
+  // public create(symbol: string): Promise<Holding> {
+  //   return this.http
+  //     .post(this.holdingsUrl, JSON.stringify({symbol: symbol}), {headers: this.headers})
+  //     .toPromise()
+  //     .then(res => res.json().data)
+  //     .catch(this.handleError);
+  // }
 
   public update(holding: Holding): Promise<Holding> {
     const url = `${this.holdingsUrl}/${holding.id}`;

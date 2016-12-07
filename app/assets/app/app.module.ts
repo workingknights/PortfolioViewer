@@ -10,7 +10,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent }           from './app.component';
 import { DashboardComponent }     from './dashboard.component';
 import { HoldingsComponent }      from './holdings.component';
+import { HoldingFormComponent }      from './holding-form.component';
 import { HoldingDetailComponent } from './holding-detail.component';
+import { NewHoldingComponent }         from './new-holding.component';
 import { HoldingService }         from './holding.service';
 
 @NgModule({
@@ -24,6 +26,8 @@ import { HoldingService }         from './holding.service';
     AppComponent,
     DashboardComponent,
     HoldingsComponent,
+    HoldingFormComponent,
+    NewHoldingComponent,
     HoldingDetailComponent,
   ],
   providers: [ HoldingService ],

@@ -34,15 +34,17 @@ class HoldingsController @Inject()(val reactiveMongoApi: ReactiveMongoApi)
     else Redirect(call)
 
   def add: Action[JsValue] = Action.async(BodyParsers.parse.json) { implicit request =>
+    Logger.info(request.body.toString())
+
     val symbol = (request.body \ Symbol).as[String]
-//    val shares = (request.body \ Shares).as[Int]
-//    val price = (request.body \ Price).as[Double]
+    val shares = (request.body \ Shares).as[Int]
+    val price = (request.body \ Price).as[Double]
 //    val tradeDate = (request.body \ TradeDate).as[String]
 
     holdingRepo.save(BSONDocument(
-      Symbol -> symbol
-//      Shares -> shares,
-//      Price -> price,
+      Symbol -> symbol,
+      Shares -> shares,
+      Price -> price
 //      TradeDate -> tradeDate
     )).map(le => Redirect(routes.HoldingsController.list()))
   }

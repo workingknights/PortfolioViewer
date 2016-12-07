@@ -18,16 +18,6 @@ export class HoldingsComponent implements OnInit {
     private holdingService: HoldingService,
     private router: Router) { }
 
-  public add(name: string): void {
-    name = name.trim();
-    if (!name) { return; }
-    this.holdingService.create(name)
-      .then(holding => {
-        this.holdings.push(holding);
-        this.selectedHolding = null;
-      });
-  }
-
   public delete(holding: Holding): void {
     this.holdingService
         .delete(holding.id)

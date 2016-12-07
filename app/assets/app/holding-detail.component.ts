@@ -23,7 +23,7 @@ export class HoldingDetailComponent implements OnInit {
 
   public ngOnInit(): void {
     this.route.params // tslint:disable-next-line:no-string-literal
-      .switchMap((params: Params) => this.holdingService.getHolding(+params['id']))
+      .switchMap((params: Params) => this.holdingService.getHolding(params['id']))
       .subscribe(holding => this.holding = holding);
   }
 

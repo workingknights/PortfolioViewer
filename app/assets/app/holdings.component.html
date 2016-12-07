@@ -1,10 +1,4 @@
 <h2>My Holdings</h2>
-<div>
-  <label>Holding symbol:</label> <input #holdingSymbol />
-  <button (click)="add(holdingSymbol.value); holdingSymbol.value=''">
-    Add
-  </button>
-</div>
 <ul class="holdings">
   <li *ngFor="let holding of holdings" (click)="onSelect(holding)"
       [class.selected]="holding === selectedHolding">
